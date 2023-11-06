@@ -32,3 +32,8 @@ ports:
 
 service:
   type: NodePort
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+  name: traefik

@@ -59,7 +59,12 @@ kind create cluster \
   -n $CLUSTER_NAME \
   --config kind-config.yaml
 
-# helm install traefik ../charts/traefik \
+helm install argo-cd ../charts/argo-cd \
+   -n argo-cd \
+   --create-namespace \
+   --values=argo-cd.values.yaml
+
+# helm install traefik charts/traefik \
 #     -n traefik \
 #     --create-namespace \
 #     --values=traefik.values.yaml
@@ -68,8 +73,3 @@ kind create cluster \
 #     -n cert-manager \
 #     --create-namespace \
 #     --values=cert-manager.values.yaml
-
-#helm install argo-cd ../charts/argo-cd \
-#    -n argo-cd \
-#    --create-namespace \
-#    --values=argo-cd.values.yaml
