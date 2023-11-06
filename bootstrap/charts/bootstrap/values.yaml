@@ -1,0 +1,14 @@
+argocdNamespace: argocd
+
+github:
+  githubAppRepoCreds:               # Credentials for a github app
+    enabled: false                  # Enable github app credentials
+    name: ""                        # Name of the repo-creds secret
+    url: ""                         # URL prefix for the template
+    githubAppPrivateKey: ""         # Private key of the github app
+    githubAppID: ""                 # ID of the github app
+    githubAppInstallationID: ""     # Installation ID of the github app
+  rpositories: []
+  # Add git repositories here
+  # - name: ""                # Name of the repository
+  #   url:  ""                # URL of the repository
