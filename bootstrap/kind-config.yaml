@@ -25,14 +25,5 @@ nodes:
   #   hostPort: 8082
   #   protocol: TCP
 - role: worker
-  labels:
-    gpu.nvidia.com/count: "1"
-    gpu.nvidia.com/class: "A40"
 - role: worker
-  labels:
-    gpu.nvidia.com/count: "2"
-    gpu.nvidia.com/class: "RTX_A6000"
 - role: worker
-  labels:
-    gpu.nvidia.com/count: "3"
-    gpu.nvidia.com/class: "H100_NVLINK_80GB"

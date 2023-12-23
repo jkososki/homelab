@@ -1,0 +1,71 @@
+#!/bin/bash -e
+
+
+show_usage() {
+  echo "Usage: $0 [-h|--help] [-c|--cluster-name <name>]"
+  echo
+  echo "Options:"
+  echo "  -h, --help            Show this help message"
+  echo "  -c, --cluster-name    Specify the name of the cluster"
+  echo "  -k, --kind-config     Specify the path to the kind config file"
+  echo
+  echo "Example:"
+  echo "  $0 -c my-cluster"
+  exit 1
+}
+
+#!/bin/bash -e
+
+while (( "$#" )); do
+  case "$1" in
+    -h|--help)
+      echo "Help message"
+      exit 1
+      ;;
+    -c|--cluster-name)
+      CLUSTER_NAME="$2"
+      shift 2
+      ;;
+    -k|--kind-config)
+      KIND_CONFIG="$2"
+      shift 2
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+# rest of the script...
+
+echo "Creating cluster $CLUSTER_NAME"
+exit 1
+kind create cluster \
+  -n $CLUSTER_NAME \
+  --config bootstrap/kind-config.yaml
+
+# helm install argo-cd ../charts/argo-cd \
+#    -n argo-cd \
+#    --create-namespace \
+#    --values=argo-cd.values.yaml
+
+# helm install traefik charts/traefik \
+#     -n traefik \
+#     --create-namespace \
+#     --values=traefik.values.yaml
+
+# helm install cert-manager ../charts/cert-manager \
+#     -n cert-manager \
+#     --create-namespace \
+#     --values=cert-manager.values.yaml
