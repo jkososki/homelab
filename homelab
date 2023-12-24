@@ -1,6 +1,18 @@
 #!/bin/bash -e
 
 
+KEY_FILE=$(PWD)/bootstrap/certs/localhost/key.pem
+if [ ! -f "$KEY_FILE" ]; then
+  echo "Error: $KEY_FILE does not exist."
+  exit 1
+fi
+
+CERT_FILE=$(PWD)/bootstrap/certs/localhost/cert.pem
+if [ ! -f "$CERT_FILE" ]; then
+  echo "Error: $CERT_FILE does not exist."
+  exit 1
+fi
+
 
 CLUSTER_NAME=homelab
 KIND_CONFIG=bootstrap/tmp.kind-config.yaml

@@ -1,5 +1,4 @@
 #!/bin/bash -e
 
-rm -rf bootstrap/certs
-docker build -f $(PWD)/bootstrap/Dockerfile.certs -t minica:latest $(PWD)/bootstrap/
-docker run --rm -it -v $(PWD)/bootstrap/certs:/certs minica:latest minica --domains "localhost,*.localhost" --ip-addresses "127.0.0.1"
+docker build -f $(PWD)/Dockerfile.certs -t minica:latest $(PWD)/bootstrap/
+docker run --rm -it -v $(PWD)/certs:/certs minica:latest minica --domains "localhost,*.localhost" --ip-addresses "127.0.0.1"
