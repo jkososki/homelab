@@ -1,69 +1,49 @@
 #!/bin/bash -e
 
+rm -rf bootstrap/certs
+docker build -f $(PWD)/bootstrap/Dockerfile.certs -t minica:latest $(PWD)/bootstrap/
+docker run --rm -it -v $(PWD)/bootstrap/certs:/certs minica:latest minica --domains "*.localhost" --ip-addresses "127.0.0.1"
 
-show_usage() {
-  echo "Usage: $0 [-h|--help] [-c|--cluster-name <name>]"
-  echo
-  echo "Options:"
-  echo "  -h, --help            Show this help message"
-  echo "  -c, --cluster-name    Specify the name of the cluster"
-  echo "  -k, --kind-config     Specify the path to the kind config file"
-  echo
-  echo "Example:"
-  echo "  $0 -c my-cluster"
-  exit 1
-}
-
-#!/bin/bash -e
-
-while (( "$#" )); do
-  case "$1" in
-    -h|--help)
-      echo "Help message"
-      exit 1
-      ;;
-    -c|--cluster-name)
-      CLUSTER_NAME="$2"
-      shift 2
-      ;;
-    -k|--kind-config)
-      KIND_CONFIG="$2"
-      shift 2
-      ;;
-    --) # end argument parsing
-      shift
-      break
-      ;;
-    -*|--*=) # unsupported flags
-      echo "Error: Unsupported flag $1" >&2
-      exit 1
-      ;;
-    *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
-      shift
-      ;;
-  esac
-done
-# set positional arguments in their proper place
-eval set -- "$PARAMS"
-
-# rest of the script...
+CLUSTER_NAME=homelab
+KIND_CONFIG=bootstrap/tmp.kind-config.yaml
+cat bootstrap/kind-config.yaml | envsubst > $KIND_CONFIG
 
 echo "Creating cluster $CLUSTER_NAME"
 kind create cluster \
   -n $CLUSTER_NAME \
-  --config bootstrap/kind-config.yaml
+  --config $KIND_CONFIG
 
+sleep 5
 CURRENT_CLUSTER=$(kubectl config current-context)
 if [ "$CURRENT_CLUSTER" != "$CLUSTER_NAME" ]; then
-  echo "Switching to cluster $CLUSTER_NAME"
-  kubectl config use-context $CLUSTER_NAME
+  echo "Switching to cluster kind-${CLUSTER_NAME}"
+  kubectl config use-context kind-${CLUSTER_NAME}
 fi
 
-helm install traefik traefik-26.0.0.tgz --namespace=traefik --values=bootstrap/traefik.values.yaml
-
 kubectl create namespace traefik
+kubectl create secret tls \
+  --namespace=traefik localhost-cert \
+  --key=$(PWD)/bootstrap/certs/_.localhost/key.pem \
+  --cert=$(PWD)/bootstrap/certs/_.localhost/cert.pem
+
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dynamic
+  namespace: traefik
+data:
+  dynamic.toml: |
+    # Dynamic configuration
+    [[tls.certificates]]
+    certFile = "/certs/tls.crt"
+    keyFile = "/certs/tls.key"
+EOF
+
+
 helm upgrade --install traefik bootstrap/traefik-26.0.0.tgz \
   --namespace=traefik \
   --create-namespace \
+  --wait \
   --values=bootstrap/traefik.values.yaml

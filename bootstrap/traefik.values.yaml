@@ -1,13 +1,13 @@
 ---
-providers:
-  kubernetesCRD:
-    namespaces:
-      - default
-      - traefik
-  kubernetesIngress:
-    namespaces:
-      - default
-      - traefik
+# providers:
+#   kubernetesCRD:
+#     namespaces:
+#       - default
+#       - traefik
+#   kubernetesIngress:
+#     namespaces:
+#       - default
+#       - traefik
 
 ports:
   traefik:
@@ -25,3 +25,21 @@ ingressClass:
   enabled: true
   isDefaultClass: true
   name: traefik
+
+volumes:
+- name: localhost-cert
+  mountPath: "/certs"
+  type: secret
+- name: dynamic
+  mountPath: "/config"
+  type: configMap
+
+additionalArguments:
+- --providers.file.filename=/config/dynamic.toml
+- --accesslog=true
+- --accessLog.fields.defaultMode="keep"
+- --accessLog.fields.headers.defaultMode="keep"
+
+logs:
+  general:
+    level: DEBUG

@@ -10,7 +10,7 @@ nodes:
         node-labels: "ingress-ready=true"
   extraPortMappings:
   - containerPort: 32080
-    hostPort: 8080
+    hostPort: 8000
     protocol: TCP
   - containerPort: 32443
     hostPort: 8443
@@ -18,6 +18,26 @@ nodes:
   - containerPort: 32090
     hostPort: 9000
     protocol: TCP
+  extraMounts:
+  - hostPath: ${PWD}/volumes/control-plane
+    containerPath: /files
+  labels:
+    node-name: control-plane
 - role: worker
+  extraMounts:
+  - hostPath: ${PWD}/volumes/worker-1
+    containerPath: /files
+  labels:
+    node-name: worker-1
 - role: worker
+  extraMounts:
+  - hostPath: ${PWD}/volumes/worker-2
+    containerPath: /files
+  labels:
+    node-name: worker-2
 - role: worker
+  extraMounts:
+  - hostPath: ${PWD}/volumes/worker-3
+    containerPath: /files
+  labels:
+    node-name: worker-3
