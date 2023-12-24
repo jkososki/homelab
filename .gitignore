@@ -305,4 +305,4 @@ dist
 
 # INCLUDES
 
-!bootstrap/*
+!bootstrap/*.tgz
