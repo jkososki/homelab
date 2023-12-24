@@ -50,22 +50,20 @@ eval set -- "$PARAMS"
 # rest of the script...
 
 echo "Creating cluster $CLUSTER_NAME"
-exit 1
 kind create cluster \
   -n $CLUSTER_NAME \
   --config bootstrap/kind-config.yaml
 
-# helm install argo-cd ../charts/argo-cd \
-#    -n argo-cd \
-#    --create-namespace \
-#    --values=argo-cd.values.yaml
+CURRENT_CLUSTER=$(kubectl config current-context)
+if [ "$CURRENT_CLUSTER" != "$CLUSTER_NAME" ]; then
+  echo "Switching to cluster $CLUSTER_NAME"
+  kubectl config use-context $CLUSTER_NAME
+fi
 
-# helm install traefik charts/traefik \
-#     -n traefik \
-#     --create-namespace \
-#     --values=traefik.values.yaml
+helm install traefik traefik-26.0.0.tgz --namespace=traefik --values=bootstrap/traefik.values.yaml
 
-# helm install cert-manager ../charts/cert-manager \
-#     -n cert-manager \
-#     --create-namespace \
-#     --values=cert-manager.values.yaml
+kubectl create namespace traefik
+helm upgrade --install traefik bootstrap/traefik-26.0.0.tgz \
+  --namespace=traefik \
+  --create-namespace \
+  --values=bootstrap/traefik.values.yaml
