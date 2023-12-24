@@ -1,8 +1,6 @@
 #!/bin/bash -e
 
-rm -rf bootstrap/certs
-docker build -f $(PWD)/bootstrap/Dockerfile.certs -t minica:latest $(PWD)/bootstrap/
-docker run --rm -it -v $(PWD)/bootstrap/certs:/certs minica:latest minica --domains "*.localhost" --ip-addresses "127.0.0.1"
+
 
 CLUSTER_NAME=homelab
 KIND_CONFIG=bootstrap/tmp.kind-config.yaml
@@ -20,11 +18,12 @@ if [ "$CURRENT_CLUSTER" != "$CLUSTER_NAME" ]; then
   kubectl config use-context kind-${CLUSTER_NAME}
 fi
 
+sleep 5
 kubectl create namespace traefik
 kubectl create secret tls \
   --namespace=traefik localhost-cert \
-  --key=$(PWD)/bootstrap/certs/_.localhost/key.pem \
-  --cert=$(PWD)/bootstrap/certs/_.localhost/cert.pem
+  --key=$(PWD)/bootstrap/certs/localhost/key.pem \
+  --cert=$(PWD)/bootstrap/certs/localhost/cert.pem
 
 
 cat <<EOF | kubectl apply -f -
