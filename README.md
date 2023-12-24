@@ -30,11 +30,31 @@ The following are needed to use this homelab:
 
    Add `bootstrap/minica.pem` to your trust store to allow your browser to trust your applications.  
 
+### Update the Hosts File [ OPTIONAL ]
+
+If you would like to add additional domains, update the host file to include them.
+
+Example:
+
+```plaintext
+127.0.0.1   whoami.localhost
+```
+
 ### Create Kind Cluster
 
    Run the `homelab` script to create a new cluster.  This script bootstrap the cluster.  The cluster will contain the following:  
 
    - Traefik
-   - ArgoCD
-   - Harbor
    - ...
+
+#### Test the Cluster
+
+   Once the cluster has been initialized you can access the Traefik dashboard at `http://localhost:9000/dashboard/#/`.  
+   You can also install the `whoami` project:
+
+   ```bash
+   kubectl apply -f demos/whoami/whoami.yaml
+   ```
+
+   This will test the certs & ingress.  `https://whoami.homelab.localhost` .
+
