@@ -57,40 +57,40 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = { 'include': [str(df.parent) for df in list(modified_images)] }
+        publish_list = [str(df.parent) for df in list(modified_images)]
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
-          f_out.write(f'publish_count={len(publish_list["include"])}\n')
+          f_out.write(f'publish_count={len(publish_list)}\n')
 
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
           f_out.write('# Images to Publish\n')
-          if len(publish_list['include']) > 0:
-            for image in publish_list['include']:
+          if len(publish_list) > 0:
+            for image in publish_list:
               f_out.write(f'- {image}\n')
           else: 
             f_out.write('No images to publish\n')
 
-  publish-images:
-    runs-on: ubuntu-22.04
-    name: ${{ matrix }}
-    needs: 
-    - get-builds
-    strategy:
-      matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+  # publish-images:
+  #   runs-on: ubuntu-22.04
+  #   name: ${{ matrix }}
+  #   needs: 
+  #   - get-builds
+  #   strategy:
+  #     matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v4
+  #     with:
+  #       fetch-depth: 0
 
-    - name: Login to Registry
-      env:
-        REGISTRY: ${{ env.REGISTRY }}
-        USERNAME: ${{ github.actor }}
-        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        docker login -u $USERNAME -p $PASSWORD $REGISTRY
+  #   - name: Login to Registry
+  #     env:
+  #       REGISTRY: ${{ env.REGISTRY }}
+  #       USERNAME: ${{ github.actor }}
+  #       PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  #     run: |
+  #       docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
     # - name: Publish Image
     #   shell: bash
