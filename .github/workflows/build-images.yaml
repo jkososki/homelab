@@ -57,7 +57,7 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = { 'include': list(modified_images) }
+        publish_list = { 'include': [ str(df) for df in list(modified_images) }
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
