@@ -1,0 +1,72 @@
+name: Build All
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      image:
+        type: choice
+        description: 'Docker image to publish'
+        options:
+        - docker/certs
+        - docker/gitserver
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  get-builds:
+    runs-on: ubuntu-22.04
+    name: Get Builds
+    outputs:
+      publish_list: ${{ steps.get-df.outputs.publish_list }}
+      publish_count: ${{ steps.get-df.outputs.publish_count }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Get Changes
+      id: get-diff
+      if: github.event_name == 'push'
+      run: |
+        diff=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | jq -R -s -c 'split("\n")[:-1]')
+        echo "CHANGES=$diff" >> $GITHUB_OUTPUT
+    - name: Get Dockerfiles
+      id: get-df
+      env:
+        CHANGES: ${{ steps.get-diff.outputs.CHANGES }}
+      shell: python
+      run: |
+        import os
+        import json
+        from pathlib import Path
+        import yaml
+
+        if os.getenv('CHANGES'):
+          changes = json.loads(os.getenv('CHANGES'))
+        else:
+          changes = ['${{ inputs.image }}']
+
+        # Get all charts in the change list
+        modified_images = set()
+        for df in list(Path('.').rglob('Dockerfile')):
+          for change in changes:
+            if change.startswith(str(df.parent)):
+              modified_images.add(df)
+
+        publish_list = { 'include': list(modified_images) }
+        print("publish_list:  ", json.dumps(publish_list, indent=2))
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
+          f_out.write(f'publish_list={json.dumps(publish_list)}\n')
+          f_out.write(f'publish_count={len(helm_charts)}\n')
+
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
+          f_out.write('# Charts to Publish\n')
+          if len(helm_charts) > 0:
+            for chart in publish_list['include']:
+              f_out.write(f'- {chart["path"]}:{chart["version"]}\n')
+          else: 
+            f_out.write('No charts to publish\n')
