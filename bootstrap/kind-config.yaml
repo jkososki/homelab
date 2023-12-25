@@ -21,23 +21,35 @@ nodes:
   extraMounts:
   - hostPath: ${PWD}/volumes/control-plane
     containerPath: /files
+  - hostPath: ${PWD}/apps
+    containerPath: /app-repo
+    readOnly: true
   labels:
     node-name: control-plane
 - role: worker
   extraMounts:
   - hostPath: ${PWD}/volumes/worker-1
     containerPath: /files
+  - hostPath: ${PWD}/apps
+    containerPath: /app-repo
+    readOnly: true
   labels:
     node-name: worker-1
 - role: worker
   extraMounts:
   - hostPath: ${PWD}/volumes/worker-2
     containerPath: /files
+  - hostPath: ${PWD}/apps
+    containerPath: /app-repo
+    readOnly: true
   labels:
     node-name: worker-2
 - role: worker
   extraMounts:
   - hostPath: ${PWD}/volumes/worker-3
     containerPath: /files
+  - hostPath: ${PWD}/apps
+    containerPath: /app-repo
+    readOnly: true
   labels:
     node-name: worker-3
