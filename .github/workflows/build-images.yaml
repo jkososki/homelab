@@ -61,11 +61,11 @@ jobs:
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
-          f_out.write(f'publish_count={len(helm_charts)}\n')
+          f_out.write(f'publish_count={len(publish_list["include"])}\n')
 
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
           f_out.write('# Charts to Publish\n')
-          if len(helm_charts) > 0:
+          if len(publish_list['include']) > 0:
             for chart in publish_list['include']:
               f_out.write(f'- {chart["path"]}:{chart["version"]}\n')
           else: 
