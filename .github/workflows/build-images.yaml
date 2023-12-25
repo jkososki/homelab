@@ -50,7 +50,7 @@ jobs:
         else:
           changes = ['${{ inputs.image }}']
 
-        # Get all charts in the change list
+        # Get all Images in the change list
         modified_images = set()
         for df in list(Path('.').rglob('Dockerfile')):
           for change in changes:
@@ -64,9 +64,9 @@ jobs:
           f_out.write(f'publish_count={len(publish_list["include"])}\n')
 
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
-          f_out.write('# Charts to Publish\n')
+          f_out.write('# Images to Publish\n')
           if len(publish_list['include']) > 0:
             for image in publish_list['include']:
               f_out.write(f'- {image}\n')
           else: 
-            f_out.write('No charts to publish\n')
+            f_out.write('No images to publish\n')
