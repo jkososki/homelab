@@ -58,3 +58,10 @@ helm upgrade --install traefik bootstrap/traefik-26.0.0.tgz \
   --create-namespace \
   --wait \
   --values=bootstrap/traefik.values.yaml
+
+helm -n argocd \
+    upgrade --install --create-namespace \
+    argocd \
+    argo-cd-5.51.6.tgz \
+    --values=config.values.yaml
+
