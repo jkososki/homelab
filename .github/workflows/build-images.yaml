@@ -57,7 +57,7 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = { 'include': [str(df) for df in list(modified_images)] }
+        publish_list = { 'include': [str(df.parent) for df in list(modified_images)] }
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
@@ -70,3 +70,33 @@ jobs:
               f_out.write(f'- {image}\n')
           else: 
             f_out.write('No images to publish\n')
+
+  publish-images:
+    runs-on: ubuntu-22.04
+    name: ${{ matrix.path }}
+    needs: 
+    - get-builds
+    strategy:
+      matrix: ${{ fromJson(needs.get-builds.outputs.build_list) }}
+    outputs: {}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Login to Registry
+      env:
+        REGISTRY: ${{ env.REGISTRY }}
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        docker login -u $USERNAME -p $PASSWORD $REGISTRY
+
+    # - name: Publish Image
+    #   shell: bash
+    #   working-directory: ${{ matrix.path }}
+    #   run: |
+    #     package_result=$(helm package .)
+    #     chart_path=$(echo $package_result | cut -d ':' -f 2 | xargs)
+    #     helm push $chart_path oci://${{ env.REGISTRY_NAME }}
