@@ -71,26 +71,27 @@ jobs:
           else: 
             f_out.write('No images to publish\n')
 
-  # publish-images:
-  #   runs-on: ubuntu-22.04
-  #   name: ${{ matrix }}
-  #   needs: 
-  #   - get-builds
-  #   strategy:
-  #     matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0
+  publish-images:
+    runs-on: ubuntu-22.04
+    name: ${{ matrix.image }}
+    needs: 
+    - get-builds
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-  #   - name: Login to Registry
-  #     env:
-  #       REGISTRY: ${{ env.REGISTRY }}
-  #       USERNAME: ${{ github.actor }}
-  #       PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-  #     run: |
-  #       docker login -u $USERNAME -p $PASSWORD $REGISTRY
+    - name: Login to Registry
+      env:
+        REGISTRY: ${{ env.REGISTRY }}
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
     # - name: Publish Image
     #   shell: bash
