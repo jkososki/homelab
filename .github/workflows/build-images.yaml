@@ -73,12 +73,11 @@ jobs:
 
   publish-images:
     runs-on: ubuntu-22.04
-    name: ${{ matrix.path }}
+    name: ${{ matrix }}
     needs: 
     - get-builds
     strategy:
-      matrix: ${{ fromJson(needs.get-builds.outputs.build_list) }}
-    outputs: {}
+      matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
