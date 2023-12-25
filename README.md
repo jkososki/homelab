@@ -53,7 +53,7 @@ Example:
    You can also install the `whoami` project:
 
    ```bash
-   kubectl apply -f demos/whoami/whoami.yaml
+   kubectl apply -f utils/whoami/whoami.yaml
    ```
 
    This will test the certs & ingress.  `https://whoami.homelab.localhost` .
