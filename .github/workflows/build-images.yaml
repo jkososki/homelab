@@ -84,7 +84,7 @@ jobs:
         image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
         os:
         - ubuntu-22.04
-        - macos-12
+        - macos-12-large
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install Docker
-      if: ${{ matrix.os == 'macos-12' }}
+      if: ${{ matrix.os == 'macos-12-large' }}
       run: |
         brew install --cask docker
 
