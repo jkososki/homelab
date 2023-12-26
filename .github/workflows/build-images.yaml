@@ -59,7 +59,7 @@ jobs:
 
         publish_count = len(list(modified_images))
         publish_list = {
-          "includes": [
+          "include": [
             {"path": str(df.parent), "image": str(Path(*df.parent.parts[1:]))}
             for df in list(modified_images)
           ]
@@ -92,7 +92,7 @@ jobs:
     - run: |
         echo "publish_list:  ${{ needs.get-builds.outputs.publish_list }}"
         echo "publish_count: ${{ needs.get-builds.outputs.publish_count }}"
-        
+
     # - name: Checkout
     #   uses: actions/checkout@v4
     #   with:
