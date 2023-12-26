@@ -99,3 +99,4 @@ jobs:
       working-directory: ${{ matrix.image }}
       run: |
         echo "Publishing ${{ matrix.image }}"
+        docker build -t ${{ matrix.image }} .
