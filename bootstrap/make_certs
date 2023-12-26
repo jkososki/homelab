@@ -2,5 +2,5 @@
 
 docker run --rm -it \
     -v $(PWD)/certs:/certs \
-    ghcr.io/jkososki/docker/certs:latest \
+    ghcr.io/jkososki/certs:latest \
     minica --domains "localhost,*.homelab.localhost" --ip-addresses "127.0.0.1"
