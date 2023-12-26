@@ -74,6 +74,7 @@ jobs:
   publish-images:
     runs-on: ubuntu-22.04
     name: ${{ matrix.image }}
+    if: ${{ needs.get-builds.outputs.publish_count }} > 0
     needs: 
     - get-builds
     strategy:
