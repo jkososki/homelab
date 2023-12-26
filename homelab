@@ -57,10 +57,10 @@ helm upgrade --install traefik $(PWD)/apps/traefik/traefik-26.0.0.tgz \
   --namespace=traefik \
   --create-namespace \
   --wait \
-  --values=$(PWD)/apps/traefik/traefik.values.yaml
+  --values=$(PWD)/apps/traefik/deploy.values.yaml
 
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
     $(PWD)/apps/argocd/argo-cd-5.51.6.tgz \
-    --values=$(PWD)/apps/argocd/config.values.yaml
+    --values=$(PWD)/apps/argocd/deploy.values.yaml
