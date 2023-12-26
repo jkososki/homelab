@@ -72,7 +72,7 @@ jobs:
             f_out.write('No images to publish\n')
 
   publish-images:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-22.04
     name: ${{ matrix.image }}
     if: ${{ needs.get-builds.outputs.publish_count > 0 }}
     permissions:
@@ -82,9 +82,9 @@ jobs:
     strategy:
       matrix: 
         image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
-        # platform:
-        # # - linux/amd64
-        # - linux/arm64
+        platform:
+        - linux/amd64
+        - linux/arm64
     steps:
     - name: Checkout
       uses: actions/checkout@v4
