@@ -97,8 +97,11 @@ jobs:
     - name: Publish Image
       shell: bash
       working-directory: ${{ matrix.image }}
+      env:
+        IMAGE_NAME: ${{ env.REGISTRY }}/${{github.repository_owner}}/${{ matrix.image }}
       run: |
-        echo "Publishing ${{ matrix.image }}"
-        docker build -t ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }} .
-        docker push ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ matrix.image }}:latest
+        echo "Publishing $IMAGE_NAME"
+        docker build -t $IMAGE_NAME:${{ github.sha }} .
+        docker push $IMAGE_NAME:${{ github.sha }}
+        docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:latest
