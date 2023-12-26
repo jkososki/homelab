@@ -73,7 +73,7 @@ jobs:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
           f_out.write('# Images to Publish\n')
           if publish_count > 0:
-            for image in publish_list['includes']:
+            for image in publish_list['include']:
               f_out.write(f'- {image["path"]}\n')
           else: 
             f_out.write('No images to publish\n')
@@ -86,8 +86,8 @@ jobs:
       packages: write
     needs: 
     - get-builds
-    # strategy:
-    #   matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+    strategy:
+      matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
     - run: |
         echo "publish_list:  ${{ needs.get-builds.outputs.publish_list }}"
