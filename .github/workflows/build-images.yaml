@@ -75,6 +75,8 @@ jobs:
     runs-on: ubuntu-22.04
     name: ${{ matrix.image }}
     if: ${{ needs.get-builds.outputs.publish_count > 0 }}
+    permissions:
+      packages: write
     needs: 
     - get-builds
     strategy:
