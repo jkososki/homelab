@@ -77,9 +77,9 @@ jobs:
     if: ${{ needs.get-builds.outputs.publish_count > 0 }}
     needs: 
     - get-builds
-    strategy:
-      matrix: 
-        image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+    # strategy:
+    #   matrix: 
+    #     image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
     - run: |
         echo "list:  ${{ needs.get-builds.outputs.publish_list }}"
