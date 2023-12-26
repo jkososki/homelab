@@ -60,7 +60,7 @@ jobs:
         publish_list = [str(df.parent) for df in list(modified_images)]
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
-          f_out.write(f'publish_list=json.dumps(publish_list)\n')
+          f_out.write(f'publish_list={json.dumps(publish_list)}\n')
           f_out.write(f'publish_count={len(publish_list)}\n')
 
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
