@@ -89,26 +89,22 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
-    - run: |
-        echo "publish_list:  ${{ needs.get-builds.outputs.publish_list }}"
-        echo "publish_count: ${{ needs.get-builds.outputs.publish_count }}"
-
-    # - name: Checkout
-    #   uses: actions/checkout@v4
-    #   with:
-    #     fetch-depth: 0
-    # - name: Login to Registry
-    #   uses: docker/login-action@v3
-    #   with:
-    #     username: ${{ github.actor }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
-    #     registry: ${{ env.REGISTRY }}
-    # - name: Build and Push
-    #   id: build
-    #   uses: docker/build-push-action@v5
-    #   with:
-    #     context: ${{ matrix.path }}
-    #     push: true
-    #     tags: |
-    #       ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.sha }}
-    #       ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:latest
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Login to Registry
+      uses: docker/login-action@v3
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ${{ env.REGISTRY }}
+    - name: Build and Push
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ matrix.path }}
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.sha }}
+          ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:latest
