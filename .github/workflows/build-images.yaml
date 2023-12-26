@@ -73,7 +73,7 @@ jobs:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
           f_out.write('# Images to Publish\n')
           if publish_count > 0:
-            for image in publish_list:
+            for image in publish_list['includes']:
               f_out.write(f'- {image["path"]}\n')
           else: 
             f_out.write('No images to publish\n')
