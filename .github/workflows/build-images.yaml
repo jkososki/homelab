@@ -57,7 +57,11 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = [str(df.parent) for df in list(modified_images)]
+        publish_list = [
+          {"path": str(df.parent), "image": str(df.parent[2:])} 
+          for df in list(modified_images)
+        ]
+
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
@@ -80,8 +84,7 @@ jobs:
     needs: 
     - get-builds
     strategy:
-      matrix: 
-        image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+      matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -97,7 +100,7 @@ jobs:
       id: build
       uses: docker/build-push-action@v5
       with:
-        context: ${{ matrix.image }}
+        context: ${{ matrix.path }}
         push: true
         tags: |
           ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.sha }}
