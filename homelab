@@ -53,15 +53,14 @@ data:
 EOF
 
 
-helm upgrade --install traefik bootstrap/traefik-26.0.0.tgz \
+helm upgrade --install traefik $(PWD)/apps/traefik/traefik-26.0.0.tgz \
   --namespace=traefik \
   --create-namespace \
   --wait \
-  --values=bootstrap/traefik.values.yaml
+  --values=$(PWD)/apps/traefik/traefik.values.yaml
 
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
-    argo-cd-5.51.6.tgz \
-    --values=config.values.yaml
-
+    $(PWD)/apps/argocd/argo-cd-5.51.6.tgz \
+    --values=$(PWD)/apps/argocd/config.values.yaml
