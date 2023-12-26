@@ -73,36 +73,29 @@ jobs:
 
   publish-images:
     runs-on: ubuntu-22.04
-    # name: ${{ matrix.path }}
+    name: ${{ matrix.image }}
     if: ${{ needs.get-builds.outputs.publish_count > 0 }}
     needs: 
     - get-builds
-    # strategy:
-    #   matrix: 
-    #     image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+    strategy:
+      matrix: 
+        image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
-    - run: |
-        echo "list:  ${{ needs.get-builds.outputs.publish_list }}"
-        echo "count:  ${{ needs.get-builds.outputs.publish_count}}"
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-
-    # - name: Checkout
-    #   uses: actions/checkout@v4
-    #   with:
-    #     fetch-depth: 0
-
-    # - name: Login to Registry
-    #   env:
-    #     REGISTRY: ${{ env.REGISTRY }}
-    #     USERNAME: ${{ github.actor }}
-    #     PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    #   run: |
-    #     docker login -u $USERNAME -p $PASSWORD $REGISTRY
-
-    # - name: Publish Image
-    #   shell: bash
-    #   working-directory: ${{ matrix.path }}
-    #   run: |
-    #     package_result=$(helm package .)
-    #     chart_path=$(echo $package_result | cut -d ':' -f 2 | xargs)
-    #     helm push $chart_path oci://${{ env.REGISTRY_NAME }}
+    - name: Login to Registry
+      env:
+        REGISTRY: ${{ env.REGISTRY }}
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        docker login -u $USERNAME -p $PASSWORD $REGISTRY
+        
+    - name: Publish Image
+      shell: bash
+      working-directory: ${{ matrix.image }}
+      run: |
+        echo "Publishing ${{ matrix.image }}"
