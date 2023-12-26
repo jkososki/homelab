@@ -99,4 +99,6 @@ jobs:
       working-directory: ${{ matrix.image }}
       run: |
         echo "Publishing ${{ matrix.image }}"
-        docker build -t ${{ matrix.image }} .
+        docker build -t ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ matrix.image }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ matrix.image }}:latest
