@@ -57,7 +57,7 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = { "images": [str(df.parent) for df in list(modified_images)] }
+        publish_list = { "images": [{"path": str(df.parent)} for df in list(modified_images)] }
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
           f_out.write(f'publish_list={json.dumps(publish_list)}\n')
@@ -73,7 +73,7 @@ jobs:
 
   publish-images:
     runs-on: ubuntu-22.04
-    # name: ${{ matrix.image }}
+    name: ${{ matrix.path }}
     if: ${{ needs.get-builds.outputs.publish_count }} > 0
     needs: 
     - get-builds
