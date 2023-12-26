@@ -57,21 +57,24 @@ jobs:
             if change.startswith(str(df.parent)):
               modified_images.add(df)
 
-        publish_list = [
-          {"path": str(df.parent), "image": str(Path(*df.parent.parts[1:]))}
-          for df in list(modified_images)
-        ]
+        publish_count = len(list(modified_images))
+        publish_list = {
+          "includes": [
+            {"path": str(df.parent), "image": str(Path(*df.parent.parts[1:]))}
+            for df in list(modified_images)
+          ]
+        }
 
         print("publish_list:  ", json.dumps(publish_list, indent=2))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f_out:
-          f_out.write(f'publish_list={json.dumps({"includes": publish_list})}\n')
-          f_out.write(f'publish_count={len(publish_list)}\n')
+          f_out.write(f'publish_list={json.dumps(publish_list)}\n')
+          f_out.write(f'publish_count={publish_count}\n')
 
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f_out:
           f_out.write('# Images to Publish\n')
-          if len(publish_list) > 0:
+          if publish_count > 0:
             for image in publish_list:
-              f_out.write(f'- {image}\n')
+              f_out.write(f'- {image["path"]}\n')
           else: 
             f_out.write('No images to publish\n')
 
