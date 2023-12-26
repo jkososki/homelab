@@ -58,7 +58,7 @@ jobs:
               modified_images.add(df)
 
         publish_list = [
-          {"path": str(df.parent), "image": str(df.parent[2:])} 
+          {"path": str(df.parent), "image": str(Path(*df.parent[2:]))}
           for df in list(modified_images)
         ]
 
