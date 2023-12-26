@@ -73,25 +73,30 @@ jobs:
 
   publish-images:
     runs-on: ubuntu-22.04
-    name: ${{ matrix.path }}
-    if: ${{ needs.get-builds.outputs.publish_count }} > 0
+    # name: ${{ matrix.path }}
+    # if: ${{ needs.get-builds.outputs.publish_count }} > 0
     needs: 
     - get-builds
-    strategy:
-      matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
+    # strategy:
+    #   matrix: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    - run: |
+        echo "list:  ${{ needs.get-builds.outputs.publish_list }}"
+        echo "count:  ${{ needs.get-builds.outputs.publish_count}}"
 
-    - name: Login to Registry
-      env:
-        REGISTRY: ${{ env.REGISTRY }}
-        USERNAME: ${{ github.actor }}
-        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        docker login -u $USERNAME -p $PASSWORD $REGISTRY
+
+    # - name: Checkout
+    #   uses: actions/checkout@v4
+    #   with:
+    #     fetch-depth: 0
+
+    # - name: Login to Registry
+    #   env:
+    #     REGISTRY: ${{ env.REGISTRY }}
+    #     USERNAME: ${{ github.actor }}
+    #     PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |
+    #     docker login -u $USERNAME -p $PASSWORD $REGISTRY
 
     # - name: Publish Image
     #   shell: bash
