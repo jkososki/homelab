@@ -83,7 +83,7 @@ jobs:
       matrix: 
         image: ${{ fromJson(needs.get-builds.outputs.publish_list) }}
         platform:
-        - linux/amd64
+        # - linux/amd64
         - linux/arm64
     steps:
     - name: Checkout
