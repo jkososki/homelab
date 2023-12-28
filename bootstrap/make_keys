@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+rm -rf ssh-gitserver
+rm -rf ssh-keys
+
+docker run --rm -it \
+    -v $(PWD)/ssh-gitserver:/etc/ssh \
+    ghcr.io/jkososki/certs:latest \
+    ssh-keygen -A
+
+docker run --rm -it \
+    -v $(PWD)/ssh-keys:/data \
+    ghcr.io/jkososki/certs:latest \
+    ssh-keygen -b 2048 -t rsa -f /data/id_rsa -q -N ""

@@ -1,17 +1,25 @@
 #!/bin/bash -e
 
+FILES=(
+  "$(PWD)/bootstrap/certs/localhost/key.pem" 
+  "$(PWD)/bootstrap/certs/localhost/cert.pem"
+  "$(PWD)/bootstrap/ssh-keys/id_rsa"
+  "$(PWD)/bootstrap/ssh-keys/id_rsa.pub"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key"
+  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub"
+)
 
-KEY_FILE=$(PWD)/bootstrap/certs/localhost/key.pem
-if [ ! -f "$KEY_FILE" ]; then
-  echo "Error: $KEY_FILE does not exist."
-  exit 1
-fi
 
-CERT_FILE=$(PWD)/bootstrap/certs/localhost/cert.pem
-if [ ! -f "$CERT_FILE" ]; then
-  echo "Error: $CERT_FILE does not exist."
-  exit 1
-fi
+for FILE in "${FILES[@]}"; do
+  if [ ! -f "$FILE" ]; then
+    echo "Error: $FILE does not exist."
+    exit 1
+  fi
+done
 
 
 CLUSTER_NAME=homelab
