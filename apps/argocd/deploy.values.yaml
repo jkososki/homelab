@@ -5,16 +5,16 @@ configs:
     server.insecure: true
 
 
-repoServer:
-  volumes:
-  - name: app-repo
-    hostPath:
-      path: /app-repo
-      type: Directory
-  volumeMounts:
-  - mountPath: /app-repo
-    name: app-repo
-    readOnly: true
+# repoServer:
+#   volumes:
+#   - name: app-repo
+#     hostPath:
+#       path: /app-repo
+#       type: Directory
+#   volumeMounts:
+#   - mountPath: /app-repo
+#     name: app-repo
+#     readOnly: true
 
 extraObjects:
 - apiVersion: traefik.containo.us/v1alpha1

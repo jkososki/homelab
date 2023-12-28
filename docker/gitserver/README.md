@@ -1,3 +1,2 @@
-# gitserver
-
-Small image for running Git Daemon.  Used as a repo for ArgoCD
+Original Build:
+https://github.com/rockstorm101/git-server-docker?tab=readme-ov-file#advanced-configuration

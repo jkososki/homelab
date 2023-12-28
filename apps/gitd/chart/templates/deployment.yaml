@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitd
+  labels:
+    {{- include "gitd.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gitd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gitd.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: gitd
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 9418
+        volumeMounts:
+        - name: git-data
+          mountPath: /git
+      volumes:
+      - name: git-data
+        hostPath:
+          path: /gitd-repo
+          type: Directory

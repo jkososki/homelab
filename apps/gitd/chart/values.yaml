@@ -1,0 +1,4 @@
+image:
+  registry: ghcr.io
+  repo: jkososki/gitserver
+  tag: latest
