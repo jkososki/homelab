@@ -133,5 +133,5 @@ helm -n argocd \
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
-    $(PWD)/apps/argocd/argo-cd-5.51.6.tgz \
+    $(PWD)/apps/argocd/chart \
     --values=$(PWD)/apps/argocd/deploy.values.yaml
