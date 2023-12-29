@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-script_dir=$(dirname "$0")
+script_dir=$(realpath $(dirname "$0"))
 
 FILES=(
   "${script_dir}/bootstrap/certs/localhost/key.pem" 

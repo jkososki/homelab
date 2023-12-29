@@ -3,7 +3,7 @@
 rm -rf ssh-gitserver
 rm -rf ssh-keys
 
-script_dir=$(dirname $0)
+script_dir=$(realpath $(dirname "$0"))
 
 echo "Generating Host Keys"
 docker run --rm -it \
