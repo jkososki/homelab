@@ -141,7 +141,7 @@ EOF
 # Install Git Server
 helm -n argocd \
     upgrade --install --create-namespace \
-    gitd \
+    gitserver \
     ${script_dir}/apps/gitserver/chart \
     --wait \
     --values=${script_dir}/apps/gitserver/deploy.values.yaml

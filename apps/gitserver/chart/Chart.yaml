@@ -1,5 +1,5 @@
 apiVersion: v2
-name: gitd
+name: gitserver
 description: Installs Git Daemon
 type: application
 version: 0.1.0
