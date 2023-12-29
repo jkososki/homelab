@@ -1,6 +1,7 @@
 configs:
   cm:
     url: https://argocd.homelab.localhost:8443
+    exec.enabled: true
   params:
     server.insecure: true
 
