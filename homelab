@@ -140,7 +140,4 @@ helm -n argocd \
     --values=$(PWD)/apps/argocd/deploy.values.yaml
 
 # Install Cluster App-of-Apps
-helm -n argocd \
-    upgrade --install \
-    cluster-apps \
-    $(PWD)/bootstrap/cluster-apps
+kubectl apply -f $(PWD)/bootstrap/cluster-apps-of-apps.yaml
