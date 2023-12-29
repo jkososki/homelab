@@ -2,3 +2,6 @@ apps:
 - name: argocd
   namespace: argocd
   path: apps/argocd/chart
+- name: gitserver
+  namespace: argocd
+  path: apps/gitserver/chart
