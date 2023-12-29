@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ $app.name }}
-  namespace: {{ $app.namespace }}
+  namespace: argocd
   labels:
     name: {{ $app.name }}
     origin: cluster-apps
@@ -16,7 +16,7 @@ spec:
     helm:
       passCredentials: false # If true then adds --pass-credentials to Helm commands to pass credentials to all domains
       parameters: []
-      releaseName: argocd
+      releaseName: {{ $app.name }}
       valueFiles:
       - ../deploy.values.yaml
       ignoreMissingValueFiles: false
@@ -24,7 +24,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: {{ $app.namespace }}
 
   syncPolicy:
     automated:
