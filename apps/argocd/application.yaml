@@ -10,8 +10,7 @@ spec:
   source:
     repoURL: ssh://git@gitd/srv/git/homelab
     targetRevision: main
-    path: apps/argocd/argo-cd-5.51.6.tgz
-    chart: argo-cd
+    path: apps/argocd/chart
     helm:
       passCredentials: false # If true then adds --pass-credentials to Helm commands to pass credentials to all domains
       parameters: []
@@ -26,7 +25,7 @@ spec:
       # Helm values files for overriding values in the helm chart
       # The path is relative to the spec.source.path directory defined above
       valueFiles:
-      - apps/argocd/deploy.values.yaml
+      - ../deploy.values.yaml
 
       # Ignore locally missing valueFiles when installing Helm chart. Defaults to false
       ignoreMissingValueFiles: false
