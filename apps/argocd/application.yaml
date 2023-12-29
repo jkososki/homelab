@@ -30,7 +30,6 @@ spec:
       # Ignore locally missing valueFiles when installing Helm chart. Defaults to false
       ignoreMissingValueFiles: false
       skipCrds: false
-      version: v2
 
   destination:
     server: https://kubernetes.default.svc
