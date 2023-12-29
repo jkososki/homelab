@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
+script_dir=$(dirname $0)
+echo "Generating site certificates"
 docker run --rm -it \
-    -v $(PWD)/certs:/certs \
+    -v ${script_dir}/certs:/certs \
     ghcr.io/jkososki/certs:latest \
     minica --domains "localhost,*.homelab.localhost" --ip-addresses "127.0.0.1"

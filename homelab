@@ -1,23 +1,38 @@
 #!/bin/bash -e
 
-FILES=(
-  "$(PWD)/bootstrap/certs/localhost/key.pem" 
-  "$(PWD)/bootstrap/certs/localhost/cert.pem"
-  "$(PWD)/bootstrap/ssh-keys/id_rsa"
-  "$(PWD)/bootstrap/ssh-keys/id_rsa.pub"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key"
-  "$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub"
-)
+script_dir=$(dirname "$0")
 
+FILES=(
+  "${script_dir}/bootstrap/certs/localhost/key.pem" 
+  "${script_dir}/bootstrap/certs/localhost/cert.pem"
+)
 
 for FILE in "${FILES[@]}"; do
   if [ ! -f "$FILE" ]; then
-    echo "Error: $FILE does not exist."
+    echo "$FILE does not exist."
+    echo "Be sure to run bootstrap/make_certs and add the certs to your keychain."
     exit 1
+  fi
+done
+
+FILES=(
+  "${script_dir}/bootstrap/ssh-keys/id_rsa"
+  "${script_dir}/bootstrap/ssh-keys/id_rsa.pub"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_ecdsa_key"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_ed25519_key"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_rsa_key"
+  "${script_dir}/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub"
+)
+
+for FILE in "${FILES[@]}"; do
+  if [ ! -f "$FILE" ]; then
+    echo "$FILE does not exist."
+    echo "Setting up ssh keys."
+    rm -rf "${script_dir}/bootstrap/ssh-gitserver"
+    rm -rf "${script_dir}/bootstrap/ssh-keys"
+    ./bootstrap/make_keys
   fi
 done
 
@@ -42,8 +57,8 @@ sleep 5
 kubectl create namespace traefik
 kubectl create secret tls \
   --namespace=traefik localhost-cert \
-  --key=$(PWD)/bootstrap/certs/localhost/key.pem \
-  --cert=$(PWD)/bootstrap/certs/localhost/cert.pem
+  --key=${script_dir}/bootstrap/certs/localhost/key.pem \
+  --cert=${script_dir}/bootstrap/certs/localhost/cert.pem
 
 
 cat <<EOF | kubectl apply -f -
@@ -61,23 +76,23 @@ data:
 EOF
 
 
-helm upgrade --install traefik $(PWD)/apps/traefik/traefik-26.0.0.tgz \
+helm upgrade --install traefik ${script_dir}/apps/traefik/traefik-26.0.0.tgz \
   --namespace=traefik \
   --create-namespace \
   --wait \
-  --values=$(PWD)/apps/traefik/deploy.values.yaml
+  --values=${script_dir}/apps/traefik/deploy.values.yaml
 
 
 sleep 5
 kubectl create namespace argocd
 kubectl create secret generic \
   --namespace=argocd gitserver-keys \
-  --from-file=ssh_host_ecdsa_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key \
-  --from-file=ssh_host_ecdsa_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub \
-  --from-file=ssh_host_ed25519_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key \
-  --from-file=ssh_host_ed25519_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub \
-  --from-file=ssh_host_rsa_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key \
-  --from-file=ssh_host_rsa_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub
+  --from-file=ssh_host_ecdsa_key=${script_dir}/bootstrap/ssh-gitserver/ssh_host_ecdsa_key \
+  --from-file=ssh_host_ecdsa_key.pub=${script_dir}/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub \
+  --from-file=ssh_host_ed25519_key=${script_dir}/bootstrap/ssh-gitserver/ssh_host_ed25519_key \
+  --from-file=ssh_host_ed25519_key.pub=${script_dir}/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub \
+  --from-file=ssh_host_rsa_key=${script_dir}/bootstrap/ssh-gitserver/ssh_host_rsa_key \
+  --from-file=ssh_host_rsa_key.pub=${script_dir}/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub
 
 
 cat <<EOF | kubectl apply -f -
@@ -99,7 +114,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 stringData:
   authorized_keys: |
-    $(cat $(PWD)/bootstrap/ssh-keys/id_rsa.pub)
+    $(cat ${script_dir}/bootstrap/ssh-keys/id_rsa.pub)
 kind: Secret
 metadata:
   name: gitserver-authkeys
@@ -109,7 +124,7 @@ EOF
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 data:
-  sshPrivateKey: $(cat $(PWD)/bootstrap/ssh-keys/id_rsa | base64)
+  sshPrivateKey: $(cat ${script_dir}/bootstrap/ssh-keys/id_rsa | base64)
 stringData:
   url: ssh://git@gitd/srv/git/homelab
   insecure: "true"
@@ -127,17 +142,17 @@ EOF
 helm -n argocd \
     upgrade --install --create-namespace \
     gitd \
-    $(PWD)/apps/gitserver/chart \
+    ${script_dir}/apps/gitserver/chart \
     --wait \
-    --values=$(PWD)/apps/gitserver/deploy.values.yaml
+    --values=${script_dir}/apps/gitserver/deploy.values.yaml
 
 # Install Argo CD
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
     --wait \
-    $(PWD)/apps/argocd/chart \
-    --values=$(PWD)/apps/argocd/deploy.values.yaml
+    ${script_dir}/apps/argocd/chart \
+    --values=${script_dir}/apps/argocd/deploy.values.yaml
 
 # Install Cluster App-of-Apps
-kubectl apply -f $(PWD)/bootstrap/cluster-apps-of-apps.yaml
+kubectl apply -f ${script_dir}/bootstrap/cluster-apps.application.yaml

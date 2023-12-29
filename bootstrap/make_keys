@@ -3,12 +3,16 @@
 rm -rf ssh-gitserver
 rm -rf ssh-keys
 
+script_dir=$(dirname $0)
+
+echo "Generating Host Keys"
 docker run --rm -it \
-    -v $(PWD)/ssh-gitserver:/etc/ssh \
+    -v ${script_dir}/ssh-gitserver:/etc/ssh \
     ghcr.io/jkososki/certs:latest \
     ssh-keygen -A
 
+echo "Generating User Keys"
 docker run --rm -it \
-    -v $(PWD)/ssh-keys:/data \
+    -v ${script_dir}/ssh-keys:/data \
     ghcr.io/jkososki/certs:latest \
     ssh-keygen -b 2048 -t rsa -f /data/id_rsa -q -N ""
