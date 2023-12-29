@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitd
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "gitd.labels" . | nindent 4 }}
 spec:
@@ -21,9 +22,16 @@ spec:
         - containerPort: 22
         volumeMounts:
         - name: git-data
-          mountPath: /git
+          mountPath: /srv/git/homelab
+        - name: authkeys
+          mountPath: /home/git/.ssh/authorized_keys
+          subPath: authorized_keys
       volumes:
       - name: git-data
         hostPath:
           path: /gitd-repo
           type: Directory
+      - name: authkeys
+        secret:
+          secretName: gitserver-authkeys
+          defaultMode: 0644

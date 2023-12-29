@@ -67,6 +67,69 @@ helm upgrade --install traefik $(PWD)/apps/traefik/traefik-26.0.0.tgz \
   --wait \
   --values=$(PWD)/apps/traefik/deploy.values.yaml
 
+
+sleep 5
+kubectl create namespace argocd
+kubectl create secret generic \
+  --namespace=argocd gitserver-keys \
+  --from-file=ssh_host_ecdsa_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key \
+  --from-file=ssh_host_ecdsa_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ecdsa_key.pub \
+  --from-file=ssh_host_ed25519_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key \
+  --from-file=ssh_host_ed25519_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_ed25519_key.pub \
+  --from-file=ssh_host_rsa_key=$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key \
+  --from-file=ssh_host_rsa_key.pub=$(PWD)/bootstrap/ssh-gitserver/ssh_host_rsa_key.pub
+
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dynamic
+  namespace: traefik
+data:
+  dynamic.toml: |
+    # Dynamic configuration
+    [[tls.certificates]]
+    certFile = "/certs/tls.crt"
+    keyFile = "/certs/tls.key"
+EOF
+
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+stringData:
+  authorized_keys: |
+    $(cat $(PWD)/bootstrap/ssh-keys/id_rsa.pub)
+kind: Secret
+metadata:
+  name: gitserver-authkeys
+  namespace: argocd
+EOF
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+data:
+  sshPrivateKey: $(cat $(PWD)/bootstrap/ssh-keys/id_rsa | base64)
+stringData:
+  url: ssh://git@gitd/srv/git/homelab
+  insecure: "true"
+  name: homelab
+kind: Secret
+metadata:
+  name: homelab
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+EOF
+
+
+helm -n argocd \
+    upgrade --install --create-namespace \
+    gitd \
+    $(PWD)/apps/gitserver/chart \
+    --values=$(PWD)/apps/gitserver/deploy.values.yaml
+
+
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
