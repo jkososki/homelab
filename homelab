@@ -76,7 +76,7 @@ data:
 EOF
 
 
-helm upgrade --install traefik ${script_dir}/apps/traefik/traefik-26.0.0.tgz \
+helm upgrade --install traefik ${script_dir}/apps/traefik/chart \
   --namespace=traefik \
   --create-namespace \
   --wait \

@@ -5,3 +5,6 @@ apps:
 - name: gitserver
   namespace: argocd
   path: apps/gitserver/chart
+- name: traefik
+  namespace: traefik
+  path: apps/traefik/chart
