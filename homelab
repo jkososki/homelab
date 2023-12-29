@@ -123,15 +123,24 @@ metadata:
 EOF
 
 
+# Install Git Server
 helm -n argocd \
     upgrade --install --create-namespace \
     gitd \
     $(PWD)/apps/gitserver/chart \
+    --wait \
     --values=$(PWD)/apps/gitserver/deploy.values.yaml
 
-
+# Install Argo CD
 helm -n argocd \
     upgrade --install --create-namespace \
     argocd \
+    --wait \
     $(PWD)/apps/argocd/chart \
     --values=$(PWD)/apps/argocd/deploy.values.yaml
+
+# Install Cluster App-of-Apps
+helm -n argocd \
+    upgrade --install \
+    cluster-apps \
+    $(PWD)/bootstrap/cluster-apps

@@ -1,16 +1,18 @@
+{{- range $app := .Values.apps -}}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd
-  namespace: argocd
+  name: {{ $app.name }}
+  namespace: {{ $app.namespace }}
   labels:
-    name: argocd
+    name: {{ $app.name }}
+    origin: cluster-apps
 spec:
   project: default
   source:
     repoURL: ssh://git@gitd/srv/git/homelab
     targetRevision: main
-    path: apps/argocd/chart
+    path: {{ $app.path }}
     helm:
       passCredentials: false # If true then adds --pass-credentials to Helm commands to pass credentials to all domains
       parameters: []
@@ -25,6 +27,9 @@ spec:
     namespace: argocd
 
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:     # Sync options which modifies sync behavior
     - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
     - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
@@ -41,3 +46,5 @@ spec:
         maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
 
   revisionHistoryLimit: 10
+---
+{{- end -}}

@@ -1,0 +1,4 @@
+apps:
+- name: argocd
+  namespace: argocd
+  path: apps/argocd/chart
